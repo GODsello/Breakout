@@ -19,7 +19,7 @@ public:
 
 	SDL_Rect GetRect() { return rect; }
 
-	void OnCollision(SDL_Rect collision);
+	void OnCollision(GameObject *collision);
 
 private:
 	float velocity;

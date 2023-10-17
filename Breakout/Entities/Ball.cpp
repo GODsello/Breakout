@@ -14,13 +14,13 @@ Ball::Ball(unsigned int id,
 
 	srand((unsigned)time(NULL));
 
-	yDir = 1.0f;
-	xDir = rand() % 10 < 5 ? -0.75f : 0.75f;
+	yDir = 0.8f;
+	xDir = rand() % 10 < 5 ? -0.5f : 0.5f;
 }
 
 void Ball::Render(SDL_Renderer* renderer)
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -51,13 +51,16 @@ void Ball::Update()
 	rect.y = yPos;
 }
 
-void Ball::OnCollision(SDL_Rect collision)
+void Ball::OnCollision(GameObject *collision)
 {
-	velocity += 0.03f;
-	float midBall = rect.x + rect.w / 2.0f;
-	float midCollided = collision.x + collision.w / 2.0f;
+	if (collision->GetId() == PLAYER_ID)
+	{
+		velocity += 0.02f;
+		float midBall = rect.x + rect.w / 2.0f;
+		float midCollided = collision->GetRect()->x + collision->GetRect()->w / 2.0f;
 
-	xDir = midBall < midCollided ? -1.0 : 1.0;
+		xDir = midBall < midCollided ? -0.5 : 0.5;
+	}
 
 	yPos -= yDir * velocity * *deltaTime;
 	yDir *= -1;

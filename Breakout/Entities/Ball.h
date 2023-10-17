@@ -17,7 +17,7 @@ public:
 	void Render(SDL_Renderer* renderer);
 	void Update();
 
-	void OnCollision(SDL_Rect collision);
+	void OnCollision(GameObject *collision);
 
 	float GetXDir() { return xDir; }
 

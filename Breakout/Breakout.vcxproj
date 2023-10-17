@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Entities\Brick.cpp" />
     <ClCompile Include="Entities\Ball.cpp" />
     <ClCompile Include="Entities\Player.cpp" />
     <ClCompile Include="Font\Font.cpp" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="Entities\Brick.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Entities\Ball.h" />
     <ClInclude Include="Entities\Player.h" />

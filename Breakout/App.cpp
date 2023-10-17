@@ -10,6 +10,7 @@ App::App(){
 	score = nullptr;
 	pause = false;
 	font = nullptr;
+	life = 3;
 }
 
 App::~App(){
@@ -41,6 +42,7 @@ void App::OnUpdate()
 void App::OnLoop()
 {
 	bool quit = false;
+	life = 3;
 	
 	SDL_Event event;
 
@@ -113,8 +115,13 @@ void App::OnLoop()
 		hasLoss = CheckLoss();
 		if (hasLoss)
 		{
+			life--;
 			DeleteEntities();
 			hasMoved = false;
+			if (life == 0)
+			{
+				quit = true;
+			}
 		}
 		
 		// FPS handle
@@ -184,7 +191,7 @@ void App::CheckCollisions()
 
 			if (SDL_HasIntersection(entity1->GetRect(), entity2->GetRect()))
 			{
-				entity1->OnCollision(*entity2->GetRect());
+				entity1->OnCollision(entity2);
 			}
 		}
 	}
@@ -227,31 +234,57 @@ void App::ResetState()
 	hasLoss = false;
 	pause = false;
 	hasMoved = false;
+	life = 3;
 	score->ResetScore();
 }
 
 void App::LoadEntities() {
-	ball = new Ball(entities.size(),
+	ball = new Ball(BALL_ID,
 		SCREEN_WIDTH/2.0f - ballConstants.width/2.0f , 
 		SCREEN_HEIGHT/2.0f - ballConstants.height/2.0f,
 		ballConstants.width, ballConstants.height, 
 		0.5f, 
 		&deltaTime);
-	entities.push_back(ball);
+	entities.insert(entities.begin(), ball);
 
-	player = new Player(entities.size(), 
+	player = new Player(PLAYER_ID, 
 		SCREEN_WIDTH/2.0f - playerConstants.width/2.0f, SCREEN_HEIGHT * (4.5f/5.0f),
 		playerConstants.width, playerConstants.height, 
-		1.0f);
-	entities.push_back(player);
+		1.5f);
+	entities.insert(entities.begin() + 1, player);
+
+	if (life == 3)
+	{
+		for (unsigned int i = 0; i < BLOCK_ROWS; i++)
+		{
+			for (unsigned int j = 0; j < BLOCK_COLUMNS; j++)
+			{
+				Brick* brick = new Brick(BRICK_ID,
+					20 + (j * (brickConstants.width + 10)), BLOCK_MARGIN + (i * (10 + brickConstants.height)),
+					brickConstants.width, brickConstants.height,
+					COLORS[i][0], COLORS[i][1], COLORS[i][2],
+					10, score);
+				entities.push_back(brick);
+			}
+		}
+	}
 }
 
 void App::DeleteEntities()
 {
-	for (GameObject* g : entities) {
-		delete g;
+	for (int i = entities.size() - 1; i >= 0; i--) {
+		GameObject* entity = entities[i];
+		if (entity->GetId() != BRICK_ID || life == 0)
+		{
+			entities.erase(entities.begin() + i);
+			delete entity;
+		}
 	}
-	entities.clear();
+
+	if (life == 0)
+	{
+		entities.clear();
+	}
 
 	ball = nullptr;
 	player = nullptr;

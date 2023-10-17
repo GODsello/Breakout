@@ -16,7 +16,7 @@ public:
 	virtual void Update() = 0;
 	virtual void Render(SDL_Renderer* renderer) = 0;
 
-	virtual void OnCollision(SDL_Rect collision) = 0;
+	virtual void OnCollision(GameObject *collision) = 0;
 
 	unsigned int GetId() { return id; }
 	SDL_Rect* GetRect() { return &rect; }

@@ -10,6 +10,7 @@
 #include "GameObject/GameObject.h";
 #include "Entities/Ball.h";
 #include "Entities/Player.h";
+#include "Entities/Brick.h";
 #include "Score.h";
 #include "Menus/Pause.h";
 #include "Menus/MainMenu.h";
@@ -83,6 +84,7 @@ private:
 	
 	Player* player;
 	Ball* ball;
+	unsigned int life;
 
 	std::vector<GameObject*> entities;
 	Score* score;

@@ -42,7 +42,7 @@ void Player::MoveRight(float deltaTime)
 	rect.x = xPos;
 }
 
-void Player::OnCollision(SDL_Rect collision) 
+void Player::OnCollision(GameObject *collision) 
 {
 
 }
