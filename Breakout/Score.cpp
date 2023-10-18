@@ -3,6 +3,7 @@
 Score::Score(Font* font)
 {
 	playerScore = 0;
+	bricksRemoved = 0;
 	this->font = font;
 	UpdateScoreText();
 }
@@ -15,6 +16,7 @@ Score::~Score()
 
 void Score::AddPlayerScore(int score)
 {
+	bricksRemoved++;
 	playerScore += score;
 	UpdateScoreText();
 }
@@ -22,7 +24,13 @@ void Score::AddPlayerScore(int score)
 void Score::ResetScore()
 {
 	playerScore = 0;
+	bricksRemoved = 0;
 	UpdateScoreText();
+}
+
+void Score::ResetBricks()
+{
+	bricksRemoved = 0;
 }
 
 void Score::RenderScore()

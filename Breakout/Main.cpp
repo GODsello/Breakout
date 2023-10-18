@@ -12,10 +12,10 @@ int main(int argc, char* args[])
 			selected = app.OnMainMenuLoop();
 			if (selected != MAIN_QUIT)
 			{
-				app.ResetState();
+				app.ResetState(false);
 				app.LoadEntities();
 				app.OnLoop();
-				app.DeleteEntities();
+				app.DeleteEntities(true);
 			}
 		}
 		app.OnShutdown();

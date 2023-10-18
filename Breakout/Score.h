@@ -21,10 +21,14 @@ public:
 	*/
 	void ResetScore();
 
+	void ResetBricks();
+
 	/*
 		Renders score text texture
 	*/
 	void RenderScore();
+
+	unsigned int GetBricksRemoved() { return bricksRemoved; }
 
 
 private:
@@ -39,6 +43,7 @@ private:
 	void UpdateScoreText();
 
 	unsigned int playerScore;
+	unsigned int bricksRemoved;
 
 	Font* font;
 	LTexture* texture;

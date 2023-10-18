@@ -11,6 +11,7 @@ App::App(){
 	pause = false;
 	font = nullptr;
 	life = 3;
+	loadBricks = true;
 }
 
 App::~App(){
@@ -43,6 +44,7 @@ void App::OnLoop()
 {
 	bool quit = false;
 	life = 3;
+	GenerateLifeTexture();
 	
 	SDL_Event event;
 
@@ -50,6 +52,13 @@ void App::OnLoop()
 	{
 		if (hasLoss)
 		{
+			LoadEntities();
+		}
+
+		if (CheckWin())
+		{
+			ResetState(true);
+			loadBricks = true;
 			LoadEntities();
 		}
 
@@ -100,6 +109,10 @@ void App::OnLoop()
 
 		score->RenderScore();
 
+		font->RenderTexture(lifeTexture,
+			SCREEN_WIDTH - lifeTexture->width - 1.0f,
+			0);
+
 		for (GameObject* g : entities)
 		{
 			g->Render(window->GetRenderer());
@@ -116,12 +129,20 @@ void App::OnLoop()
 		if (hasLoss)
 		{
 			life--;
-			DeleteEntities();
+			GenerateLifeTexture();
+			DeleteEntities(false);
 			hasMoved = false;
+			loadBricks = false;
 			if (life == 0)
 			{
 				quit = true;
+				loadBricks = true;
 			}
+		}
+
+		if (CheckWin())
+		{
+			DeleteEntities(true);
 		}
 		
 		// FPS handle
@@ -218,24 +239,29 @@ void App::HandleEvents()
 {
 	const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-	if (currentKeyStates[SDL_SCANCODE_D])
+	if (currentKeyStates[SDL_SCANCODE_D] || currentKeyStates[SDL_SCANCODE_RIGHT])
 	{
 		player->MoveRight(deltaTime);
 		hasMoved = true;
 	}
-	if (currentKeyStates[SDL_SCANCODE_A]) {
+	if (currentKeyStates[SDL_SCANCODE_A] || currentKeyStates[SDL_SCANCODE_LEFT]) {
 		player->MoveLeft(deltaTime);
 		hasMoved = true;
 	}
 }
 
-void App::ResetState()
+void App::ResetState(bool win)
 {
 	hasLoss = false;
 	pause = false;
 	hasMoved = false;
-	life = 3;
-	score->ResetScore();
+	score->ResetBricks();
+	GenerateLifeTexture();
+	if (!win) {
+		loadBricks = true;
+		score->ResetScore();
+		life = 3;
+	}
 }
 
 void App::LoadEntities() {
@@ -253,7 +279,7 @@ void App::LoadEntities() {
 		1.5f);
 	entities.insert(entities.begin() + 1, player);
 
-	if (life == 3)
+	if (loadBricks)
 	{
 		for (unsigned int i = 0; i < BLOCK_ROWS; i++)
 		{
@@ -267,21 +293,22 @@ void App::LoadEntities() {
 				entities.push_back(brick);
 			}
 		}
+		loadBricks = false;
 	}
 }
 
-void App::DeleteEntities()
+void App::DeleteEntities(bool removeAll)
 {
 	for (int i = entities.size() - 1; i >= 0; i--) {
 		GameObject* entity = entities[i];
-		if (entity->GetId() != BRICK_ID || life == 0)
+		if (entity->GetId() != BRICK_ID || life == 0 || CheckWin() || removeAll)
 		{
 			entities.erase(entities.begin() + i);
 			delete entity;
 		}
 	}
 
-	if (life == 0)
+	if (life == 0 || CheckWin() || removeAll)
 	{
 		entities.clear();
 	}
@@ -298,4 +325,22 @@ bool App::CheckLoss()
 	}
 
 	return false;
+}
+
+bool App::CheckWin()
+{
+	return score->GetBricksRemoved() == BLOCK_COLUMNS * BLOCK_ROWS;
+}
+
+void App::GenerateLifeTexture()
+{
+	lifeText.str("");
+	lifeText.clear();
+	lifeText << life << " left";
+	if (lifeTexture != NULL)
+	{
+		font->ClearTexture(lifeTexture);
+		lifeTexture = nullptr;
+	}
+	lifeTexture = font->CreateTexture(MEDIUM_FONT, lifeText.str(), { 255, 255, 255 });
 }

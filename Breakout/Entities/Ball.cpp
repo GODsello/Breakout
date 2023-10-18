@@ -60,8 +60,26 @@ void Ball::OnCollision(GameObject *collision)
 		float midCollided = collision->GetRect()->x + collision->GetRect()->w / 2.0f;
 
 		xDir = midBall < midCollided ? -0.5 : 0.5;
+		yDir *= -1;
 	}
 
-	yPos -= yDir * velocity * *deltaTime;
-	yDir *= -1;
+	if (collision->GetId() == BRICK_ID)
+	{
+		SDL_Rect collRect = *collision->GetRect();
+		float topDiff = abs((rect.y + height) - collRect.y);
+		float bottomDiff = abs(rect.y - (collRect.y + collRect.h));
+		float leftDiff = abs((rect.x + rect.w) - collRect.x);
+		float rightDiff = abs(rect.x - (collRect.x + collRect.w));
+
+		if ((topDiff < bottomDiff && topDiff < leftDiff && topDiff < rightDiff) ||
+			(bottomDiff < topDiff && bottomDiff < leftDiff && bottomDiff < rightDiff))
+		{
+			yDir *= -1;
+		}
+		else if ((leftDiff < bottomDiff && leftDiff < topDiff && leftDiff < rightDiff) ||
+			(rightDiff < topDiff && rightDiff < leftDiff && rightDiff < bottomDiff))
+		{
+			xDir *= -1;
+		}
+	}
 }

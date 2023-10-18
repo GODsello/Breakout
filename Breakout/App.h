@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "Window.h";
 #include "GameObject/GameObject.h";
@@ -61,7 +62,7 @@ public:
 	/*
 		Resets game state.
 	*/
-	void ResetState();
+	void ResetState(bool win);
 
 	/*
 		Adds entities to the vector of entities
@@ -71,13 +72,20 @@ public:
 	/*
 		Removes entities from the vector of entities
 	*/
-	void DeleteEntities();
+	void DeleteEntities(bool removeAll);
 
 private:
 	/*
 		Checks if the ball has gone out
 	*/
 	bool CheckLoss();
+
+	/*
+		Checks if all bricks were removed
+	*/
+	bool CheckWin();
+
+	void GenerateLifeTexture();
 
 	Window* window;
 	float deltaTime;
@@ -92,8 +100,12 @@ private:
 	Pause* pauseMenu;
 	MainMenu* mainMenu;
 
+	LTexture* lifeTexture;
+	std::ostringstream lifeText;
+
 	bool hasLoss;
 	bool hasMoved;
 	bool pause;
+	bool loadBricks;
 };
 
